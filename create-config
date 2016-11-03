@@ -1,0 +1,49 @@
+#!/usr/bin/env nodejs
+
+var fs = require('fs');
+
+var APP = process.argv[2];
+var DOKKU_ROOT = process.env['DOKKU_ROOT'];
+var APP_ROOT = DOKKU_ROOT + '/' + APP;
+
+var ports_file = APP_ROOT + '/PORTS';
+
+if(fs.existsSync(ports_file)) {
+  var ports = JSON.parse(fs.readFileSync(ports_file));
+
+  var mappings = [];
+
+  Object.keys(ports).forEach(function(eport){
+    var proc = ports[eport][0];
+    var iport = ports[eport][1];
+
+    var ip_file = APP_ROOT + '/IP.' + proc + '.1';
+
+    if(fs.existsSync(ip_file)) {
+      var ip = fs.readFileSync(ip_file).toString().replace('\n', '');
+
+      mappings.push([eport, proc, ip, iport]);
+    }
+  });
+
+  var config = mappings.map(function(m){
+    var s = 'listen port-' + m[0] + ' :' + m[0] + '\n';
+    s += '  mode tcp\n';
+    s += '  log global\n';
+    s += '  option tcplog\n',
+    s += '  timeout connect 5s\n';
+    s += '  timeout client 24h\n';
+    s += '  timeout server 24h\n';
+    s += '  maxconn 512000\n';
+    s += '  server ' + m[1] + '.1 ' + m[2] + ':' + m[3] + ' check\n';
+    return s;
+  }).join('\n') + '\n';
+
+  var cfg_file = '/var/lib/dokku-haproxy/_22_' + APP + '.cfg';
+
+  if(config.length > 0) {
+    fs.writeFileSync(cfg_file, config);
+  } else {
+    fs.writeFileSync(cfg_file, '\n');
+  }
+}

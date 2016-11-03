@@ -1,0 +1,4 @@
+[plugin]
+description = "spamassassin for dokku"
+version = "0.0.1"
+[plugin.config]

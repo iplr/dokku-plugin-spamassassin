@@ -3,15 +3,15 @@
 echo installing spamassassin...
 
 # install spamassassin
-sudo apt-get -y install spamassassin nodejs
+#sudo apt-get -y install spamassassin nodejs
 
 # enable it
-sudo sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/spamassassin
+#sudo sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/spamassassin
 
 # give access
-sudo cat<<EOF > /etc/sudoers.d/dokku-spamassassin
-  %dokku ALL=(ALL) NOPASSWD:/etc/init.d/spamassassin *
-EOF
+#sudo cat<<EOF > /etc/sudoers.d/dokku-spamassassin
+#  %dokku ALL=(ALL) NOPASSWD:/etc/init.d/spamassassin *
+#EOF
 
 # restart service
-sudo service spamassassin restart
+#sudo service spamassassin restart

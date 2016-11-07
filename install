@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo installing spamassassin...
+
 # install spamassassin
 sudo apt-get -y install spamassassin nodejs
 

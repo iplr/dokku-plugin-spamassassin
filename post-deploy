@@ -4,11 +4,10 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 # get app
 APP="$1"
 
-# check if there is a PORTS file
-if [ -f $DOKKU_ROOT/$APP/PORTS ]; then
-  # log
-  echo "-----> post-deploy for spamassassin"
+# log
+echo "-----> post-deploy for spamassassin"
 
-  # reload config
-  sudo /etc/init.d/spamassassin restart
-fi
+sudo sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/spamassassin
+
+# reload config
+sudo /etc/init.d/spamassassin restart

@@ -10,7 +10,7 @@ echo "-----> post-deploy for spamassassin"
 #sudo
 #sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/spamassassin
 
-echo "test" > /app/log.txt
+cat /etc/passwd
 
 # reload config
 #sudo

@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
+
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
-# get app
-APP="$1"
+APP="$1"; IMAGE="dokku/$APP"
+echo "-----> setup spamassassin ..."
 
-# log
-echo "-----> post-deploy for spamassassin"
+DIR=/app
 
-#sudo
-#sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/spamassassin
-
-# reload config
-#sudo
-#/etc/init.d/spamassassin restart
+COMMAND=$(cat <<EOF
+sudo sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/spamassassin
+sleep 1 # wait so that docker run has not exited before docker attach
+EOF
+)
+id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
+#enable logs
+docker attach $id
+test $(docker wait $id) -eq 0
+docker commit $id $IMAGE > /dev/null
